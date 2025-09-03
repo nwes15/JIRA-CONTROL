@@ -1,10 +1,17 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Jira,  Comment, Ticket
-from .forms import CommentForm, JiraForm, TicketForm
+from .models import Jira,  Comment, Ticket, Customer
+from .forms import CommentForm, JiraForm, TicketForm, CustomerForm
 from django.views import View
 from django.shortcuts import get_object_or_404, redirect
 
+
+
+class CustomerCreateView(CreateView):
+    model = Customer
+    form_class = CustomerForm
+    template_name = 'jira_project/customer_form.html'
+    success_url = reverse_lazy('jira_project:ticket-create')
 
 class TicketCreateView(CreateView):
     model = Ticket

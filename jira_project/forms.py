@@ -1,5 +1,5 @@
 from django import forms
-from .models import Jira, Comment, Ticket
+from .models import Jira, Comment, Ticket, Customer
 
 
 class JiraForm(forms.ModelForm):
@@ -46,4 +46,13 @@ class TicketForm(forms.ModelForm):
         widgets = {
             'number': forms.TextInput(attrs={'class': 'form-control'}),
             'customer': forms.Select(attrs={'class': 'form-select'}),
+        }
+
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
         }

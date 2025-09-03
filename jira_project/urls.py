@@ -11,4 +11,5 @@ urlpatterns = [
     path('jira/<int:pk>/update/', views.JiraUpdateView.as_view(), name='jira-update'),
     path('jira/<int:pk>/delete/', views.JiraDeleteView.as_view(), name='jira-delete'),
     path('ticket/create/', views.TicketCreateView.as_view(), name='ticket-create'),
+    path('customer/create/', views.CustomerCreateView.as_view(), name='customer-create'),
 ]
