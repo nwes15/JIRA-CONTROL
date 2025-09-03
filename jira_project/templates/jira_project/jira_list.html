@@ -1,0 +1,108 @@
+{% extends 'jira_project/base.html' %}
+
+{% block title %}Jira List{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Jira List</h1>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="number" value="{{ request.GET.number }}" placeholder="Ticket Number" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <input type="text" name="jira_number" value="{{ request.GET.jira_number }}" placeholder="Jira Number" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <select name="type" class="form-select">
+            <option value="">Type (All)</option>
+            <option value="SERVER" {% if request.GET.type == "SERVER" %}selected{% endif %}>Server</option>
+            <option value="MAUI" {% if request.GET.type == "MAUI" %}selected{% endif %}>Maui</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <input type="text" name="customer" value="{{ request.GET.customer }}" placeholder="Customer" class="form-control" />
+    </div>
+    <div class="col-md-1 d-grid">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<table class="table table-hover table-bordered align-middle">
+    <thead class="table-light text-center">
+        <tr>
+            <th>Jira Number</th>
+            <th>Type</th>
+            <th>First Release</th>
+            <th>Creation Date</th>
+            <th>Solution Date</th>
+            <th>Tickets (Customer)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for jira in jiras %}
+        <tr>
+            <td>{{ jira.jira_number }}</td>
+            <td>{{ jira.get_type_display }}</td>
+            <td>{{ jira.first_release }}</td>
+            <td>{{ jira.creation_date|date:"d/m/Y" }}</td>
+            <td>
+                {% if jira.solution_date %}{{ jira.solution_date|date:"d/m/Y" }}{% else %} - {% endif %}
+            </td>
+            <td>
+                {% for ticket in jira.tickets.all %}
+                    {{ ticket.number }} ({{ ticket.customer.name }}){% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    -
+                {% endfor %}
+            </td>
+            <td class="text-center">
+                <a href="{% url 'jira_project:jira-detail' jira.pk %}" class="btn btn-sm btn-info" title="View Details">View</a>
+                <a href="{% url 'jira_project:jira-update' jira.pk %}" class="btn btn-sm btn-warning" title="Edit">Edit</a>
+                <a href="{% url 'jira_project:jira-delete' jira.pk %}" class="btn btn-sm btn-danger" title="Delete">Delete</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="7" class="text-center text-muted">No JIRAs found.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a href="?{% if request.GET.number %}number={{ request.GET.number }}&{% endif %}
+                   {% if request.GET.jira_number %}jira_number={{ request.GET.jira_number }}&{% endif %}
+                   {% if request.GET.type %}type={{ request.GET.type }}&{% endif %}
+                   {% if request.GET.customer %}customer={{ request.GET.customer }}&{% endif %}
+                   page={{ page_obj.previous_page_number }}" class="page-link">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+            {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a href="?page={{ num }}" class="page-link">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a href="?{% if request.GET.number %}number={{ request.GET.number }}&{% endif %}
+                   {% if request.GET.jira_number %}jira_number={{ request.GET.jira_number }}&{% endif %}
+                   {% if request.GET.type %}type={{ request.GET.type }}&{% endif %}
+                   {% if request.GET.customer %}customer={{ request.GET.customer }}&{% endif %}
+                   page={{ page_obj.next_page_number }}" class="page-link">Next</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'jira_project/base.html' %}
+
+{% block title %}
+{% if object %}Edit Jira {{ object.jira_number }}{% else %}Create New Jira{% endif %}
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    {% if object %}Edit Jira {{ object.jira_number }}{% else %}Create New Jira{% endif %}
+</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="{{ form.jira_number.id_for_label }}" class="form-label">{{ form.jira_number.label }}</label>
+            {{ form.jira_number }}
+            {% for error in form.jira_number.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="{{ form.type.id_for_label }}" class="form-label">{{ form.type.label }}</label>
+            {{ form.type }}
+            {% for error in form.type.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="{{ form.first_release.id_for_label }}" class="form-label">{{ form.first_release.label }}</label>
+            {{ form.first_release }}
+            {% for error in form.first_release.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-8 mb-3">
+            <label for="{{ form.applied_releases.id_for_label }}" class="form-label">{{ form.applied_releases.label}}</label>
+            {{ form.applied_releases }}
+            {% for error in form.applied_releases.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="{{ form.creation_date.id_for_label }}" class="form-label">{{ form.creation_date.label }}</label>
+            {{ form.creation_date }}
+            {% for error in form.creation_date.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label for="{{ form.solution_date.id_for_label }}" class="form-label">{{ form.solution_date.label }}</label>
+            {{ form.solution_date }}
+            {% for error in form.solution_date.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="{{ form.tickets.id_for_label }}" class="form-label">{{ form.tickets.label }}</label>
+        <div class="d-flex gap-2 align-items-center">
+            {{ form.tickets }}
+            <a href="{% url 'jira_project:ticket-create' %}" target="_blank" class="btn btn-outline-primary btn-sm">Add
+                Ticket</a>
+        </div>
+        {% for error in form.tickets.errors %}
+        <div class="text-danger">{{ form.tickets.errors }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'jira_project:jira-list' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'jira_project/base.html' %}
+
+{% block title %}Jira Detail - {{ jira.jira_number }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Jira Detail</h1>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">Jira #{{ jira.jira_number }} ({{ jira.get_type_display }})</h5>
+        <p><strong>First Release:</strong> {{ jira.first_release }}</p>
+        <p><strong>Applied Releases:</strong> 
+            {% if jira.applied_releases %}
+                {{ jira.applied_releases|join:", " }}
+            {% else %}
+                None
+            {% endif %}
+        </p>
+        <p><strong>Creation Date:</strong> {{ jira.creation_date|date:"d/m/Y" }}</p>
+        <p><strong>Solution Date:</strong> 
+            {% if jira.solution_date %}
+                {{ jira.solution_date|date:"d/m/Y" }}
+            {% else %}
+                Not solved yet
+            {% endif %}
+        </p>
+        <p><strong>Tickets linked:</strong> 
+            {% for ticket in jira.tickets.all %}
+                {{ ticket.number }} ({{ ticket.customer.name }}){% if not forloop.last %}, {% endif %}
+            {% empty %}
+                No tickets linked.
+            {% endfor %}
+        </p>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'jira_project:jira-update' jira.pk %}" class="btn btn-warning btn-sm">Edit Jira</a>
+            <a href="{% url 'jira_project:jira-delete' jira.pk %}" class="btn btn-danger btn-sm">Delete Jira</a>
+            <a href="{% url 'jira_project:jira-list' %}" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<h3>Comments</h3>
+<div class="mb-4">
+    {% if jira.comments.exists %}
+        <ul class="list-group">
+            {% for comment in jira.comments.all|dictsort:"informed_date" %}
+                <li class="list-group-item">
+                    <strong>{{ comment.author }}</strong> on {{ comment.informed_date|date:"d/m/Y" }} said:
+                    <p class="mb-0">{{ comment.text|linebreaks }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No comments yet.</p>
+    {% endif %}
+</div>
+
+<h4>Add a comment</h4>
+
+<form method="post" action="{% url 'jira_project:add-comment' jira.pk %}">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit" class="btn btn-primary">Add Comment</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'jira_project/base.html' %}
+
+{% block title %}Delete Jira {{ object.jira_number }}?{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-danger">Confirm Delete</h1>
+
+<p>Are you sure you want to delete the Jira <strong>{{ object.jira_number }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a href="{% url 'jira_project:jira-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
